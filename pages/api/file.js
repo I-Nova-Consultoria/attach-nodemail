@@ -1,6 +1,7 @@
 import formidable from 'formidable';
 var fs = require('fs')
 const nodemailer = require('nodemailer')
+const sgMail = require('@sendgrid/mail');
 
 export const config = {
   api: {
@@ -25,7 +26,11 @@ export default function handler(req, res) {
       console.log(err, fields, files);
     });
 
-    var transport = {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    pathToAttachment = `${__dirname}/temp/10.pdf`;
+    attachment = fs.readFileSync(pathToAttachment).toString("base64");
+
+    /*var transport = {
       host: 'smtp.gmail.com', //  //smtp.gmail
       port: 587, // 465    
       auth: {
@@ -42,24 +47,36 @@ export default function handler(req, res) {
       } else {
         console.log('Server is ready to take messages');
       }
-    });
+    });*/
 
-    var content = `Prezado Colaborador de RH, você acaba de receber um novo perfil de I.novador! Seguem os dados:  \n`
+    var content = `Prezado Colaborador de RH, você acaba de receber um novo perfil de I.novador! Seguem os dados:
+    \n Nome inovador \n Tel inovador \n email inovador \n mensagem inovador`
 
     var mail = {
-      from: "Coletor de Inovadores",
+      from: "aprovafacil.inventos@aprovafacil.net",
       to: 'mahan.mashoof@gmail.com',  // Change to email address that you want to receive messages on
       subject: 'Wohooo! Novo perfil de I.novador!',
       text: content,
       attachments: [
         {
-          filename: file.name,
-          content: '/zelda.jpg'
+          content: 'cv content',
+          filename: 'cv', //the attachment will be named accordingly
+          type: "application/pdf",
+          disposition: "attachment"
         }
       ]
     }
 
-    transporter.sendMail(mail, (err, data) => {
+    sgMail
+      .send(mail)
+      .then(() => {
+        console.log('Email sent')
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+
+    /*transporter.sendMail(mail, (err, data) => {
       if (err) {
         res.json({
           status: 'fail',
@@ -70,6 +87,40 @@ export default function handler(req, res) {
           status: 'success'
         })
       }
-    })
+    })*/
   }
 }
+
+/*
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const fs = require("fs");
+
+pathToAttachment = `${__dirname}/temp/10.pdf`;
+attachment = fs.readFileSync(pathToAttachment).toString("base64");
+
+const msg = {
+  to: 'mahan.mashoof@gmail.com',
+  from: 'aprovafacil.inventos@aprovafacil.net',
+  subject: 'testmail',
+  text: 'test doc attachment from temp folder',
+  attachments: [
+    {
+      content: attachment,
+      filename: "cv.pdf", //the attachment will be named accordingly
+      type: "application/pdf",
+      disposition: "attachment"
+    }
+  ]
+}
+
+sgMail
+  .send(msg)
+  .then(() => {
+    console.log('Email sent')
+  })
+  .catch((error) => {
+    console.error(error)
+  })
+  */
