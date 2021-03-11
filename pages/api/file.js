@@ -1,7 +1,10 @@
 import formidable from 'formidable';
 var fs = require('fs')
+const path = require("path");
 const nodemailer = require('nodemailer')
-const sgMail = require('@sendgrid/mail');
+
+/*const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);*/
 
 export const config = {
   api: {
@@ -26,68 +29,69 @@ export default function handler(req, res) {
       console.log(err, fields, files);
     });
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    pathToAttachment = `${__dirname}/temp/10.pdf`;
-    attachment = fs.readFileSync(pathToAttachment).toString("base64");
+    setTimeout(() => {
+      var pathToAttachment = "./temp/10.pdf";
+      var attachment = fs.readFileSync(path.resolve(pathToAttachment), 'binary').toString("base64");
 
-    /*var transport = {
-      host: 'smtp.gmail.com', //  //smtp.gmail
-      port: 587, // 465    
-      auth: {
-        user: 'i.novaimobiliaria3@gmail.com',
-        pass: '1n0v4@2021'
-      }
-    }
 
-    var transporter = nodemailer.createTransport(transport)
-
-    transporter.verify((error, success) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Server is ready to take messages');
-      }
-    });*/
-
-    var content = `Prezado Colaborador de RH, você acaba de receber um novo perfil de I.novador! Seguem os dados:
-    \n Nome inovador \n Tel inovador \n email inovador \n mensagem inovador`
-
-    var mail = {
-      from: "aprovafacil.inventos@aprovafacil.net",
-      to: 'mahan.mashoof@gmail.com',  // Change to email address that you want to receive messages on
-      subject: 'Wohooo! Novo perfil de I.novador!',
-      text: content,
-      attachments: [
-        {
-          content: 'cv content',
-          filename: 'cv', //the attachment will be named accordingly
-          type: "application/pdf",
-          disposition: "attachment"
+      var transport = {
+        host: 'smtp.gmail.com',
+        port: 587,
+        auth: {
+          user: 'i.novaimobiliaria3@gmail.com',
+          pass: '1n0v4@2021'
         }
-      ]
-    }
+      };
 
-    sgMail
-      .send(mail)
-      .then(() => {
-        console.log('Email sent')
-      })
-      .catch((error) => {
-        console.error(error)
-      })
+      var transporter = nodemailer.createTransport(transport);
 
-    /*transporter.sendMail(mail, (err, data) => {
-      if (err) {
-        res.json({
-          status: 'fail',
-          err
+      transporter.verify((error, success) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Server is ready to take messages');
+        }
+      });
+
+      var content = `Prezado Colaborador de RH, você acaba de receber um novo perfil de I.novador! Seguem os dados:
+      \n Nome inovador \n Tel inovador \n email inovador \n mensagem inovador`;
+
+      var mail = {
+        from: "aprovafacil.inventos@aprovafacil.net",
+        to: 'mahan.mashoof@gmail.com',
+        subject: 'Wohooo! Novo perfil de I.novador!',
+        text: content,
+        attachments: [
+          {
+            content: attachment,
+            filename: 'cv.pdf',
+            type: "application/pdf",
+            disposition: "attachment"
+          }
+        ]
+      };
+
+      /*sgMail
+        .send(mail)
+        .then(() => {
+          console.log('Email sent')
         })
-      } else {
-        res.json({
-          status: 'success'
-        })
-      }
-    })*/
+        .catch((error) => {
+          console.error(error)
+        })*/
+      transporter.sendMail(mail, (err, data) => {
+        if (err) {
+          res.json({
+            status: 'fail',
+            err
+          });
+        } else {
+          res.json({
+            status: 'success'
+          });
+        }
+      });
+    }, 1000);
   }
 }
 

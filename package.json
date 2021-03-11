@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.4.2",
     "axios": "^0.21.1",
     "formidable": "^1.2.2",
     "next": "10.0.7",
