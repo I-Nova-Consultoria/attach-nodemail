@@ -2,9 +2,11 @@ import formidable from 'formidable';
 var fs = require('fs')
 const path = require("path");
 const nodemailer = require('nodemailer')
+const sgMail = require('@sendgrid/mail');
 
-/*const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);*/
+require('dotenv').config();
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const config = {
   api: {
@@ -31,10 +33,10 @@ export default function handler(req, res) {
 
     setTimeout(() => {
       var pathToAttachment = "./temp/10.pdf";
-      var attachment = fs.readFileSync(path.resolve(pathToAttachment), 'binary').toString("base64");
+      var attachment = fs.readFileSync(path.resolve(pathToAttachment)).toString("base64");
 
 
-      var transport = {
+      /*var transport = {
         host: 'smtp.gmail.com',
         port: 587,
         auth: {
@@ -51,7 +53,7 @@ export default function handler(req, res) {
         } else {
           console.log('Server is ready to take messages');
         }
-      });
+      });*/
 
       var content = `Prezado Colaborador de RH, você acaba de receber um novo perfil de I.novador! Seguem os dados:
       \n Nome inovador \n Tel inovador \n email inovador \n mensagem inovador`;
@@ -71,15 +73,7 @@ export default function handler(req, res) {
         ]
       };
 
-      /*sgMail
-        .send(mail)
-        .then(() => {
-          console.log('Email sent')
-        })
-        .catch((error) => {
-          console.error(error)
-        })*/
-      transporter.sendMail(mail, (err, data) => {
+      sgMail.send(mail, (err, data) => {
         if (err) {
           res.json({
             status: 'fail',
@@ -91,6 +85,18 @@ export default function handler(req, res) {
           });
         }
       });
+      /*transporter.sendMail(mail, (err, data) => {
+        if (err) {
+          res.json({
+            status: 'fail',
+            err
+          });
+        } else {
+          res.json({
+            status: 'success'
+          });
+        }
+      });*/
     }, 1000);
   }
 }

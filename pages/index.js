@@ -39,7 +39,7 @@ class SimpleReactFileUpload extends React.Component {
       <form onSubmit={this.onFormSubmit}>
         <h1>File Upload</h1>
         <input type="file" onChange={this.onChange} name="someExpressFiles" />
-        <button type="submit">Upload</button>
+        <button type="submit">Submit</button>
       </form>
    )
   }
