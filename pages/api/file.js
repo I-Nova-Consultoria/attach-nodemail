@@ -20,21 +20,20 @@ export const config = {
 export default function handler(req, res) {
   if (req.method === 'POST') {
     const form = new formidable.IncomingForm();
-
     form.uploadDir = `./temp`;
     form.keepExtensions = true;
     form.on('fileBegin', function (name, file) {
       //rename the incoming file to the file's name
       file.path = form.uploadDir + "/" + file.name;
     })
-    form.parse(req, (err, fields, files) => {
-      console.log(err, fields, files);
+    const formData = form.parse(req, (err, fields, files) => {
+      console.log('formData:');
     });
 
     setTimeout(() => {
-      var pathToAttachment = "./temp/10.pdf";
+      const fileName = formData.openedFiles[0].name;
+      var pathToAttachment = formData.openedFiles[0].path;
       var attachment = fs.readFileSync(path.resolve(pathToAttachment)).toString("base64");
-
 
       /*var transport = {
         host: 'smtp.gmail.com',
@@ -66,7 +65,7 @@ export default function handler(req, res) {
         attachments: [
           {
             content: attachment,
-            filename: 'cv.pdf',
+            filename: fileName,
             type: "application/pdf",
             disposition: "attachment"
           }
@@ -100,37 +99,3 @@ export default function handler(req, res) {
     }, 1000);
   }
 }
-
-/*
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-const fs = require("fs");
-
-pathToAttachment = `${__dirname}/temp/10.pdf`;
-attachment = fs.readFileSync(pathToAttachment).toString("base64");
-
-const msg = {
-  to: 'mahan.mashoof@gmail.com',
-  from: 'aprovafacil.inventos@aprovafacil.net',
-  subject: 'testmail',
-  text: 'test doc attachment from temp folder',
-  attachments: [
-    {
-      content: attachment,
-      filename: "cv.pdf", //the attachment will be named accordingly
-      type: "application/pdf",
-      disposition: "attachment"
-    }
-  ]
-}
-
-sgMail
-  .send(msg)
-  .then(() => {
-    console.log('Email sent')
-  })
-  .catch((error) => {
-    console.error(error)
-  })
-  */
