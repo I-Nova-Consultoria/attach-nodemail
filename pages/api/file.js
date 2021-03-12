@@ -1,11 +1,10 @@
+//const nodemailer = require('nodemailer')
 import formidable from 'formidable';
 var fs = require('fs')
 const path = require("path");
-const nodemailer = require('nodemailer')
 const sgMail = require('@sendgrid/mail');
 
 require('dotenv').config();
-
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 export const config = {
@@ -13,9 +12,6 @@ export const config = {
     bodyParser: false,
   },
 };
-
-
-
 
 export default function handler(req, res) {
   if (req.method === 'POST') {
@@ -26,13 +22,13 @@ export default function handler(req, res) {
       //rename the incoming file to the file's name
       file.path = form.uploadDir + "/" + file.name;
     })
-    const formData = form.parse(req, (err, fields, files) => {
-      console.log('formData:');
+    const formContent = form.parse(req, (err, fields, files) => {
+      console.log(fields);
     });
 
     setTimeout(() => {
-      const fileName = formData.openedFiles[0].name;
-      var pathToAttachment = formData.openedFiles[0].path;
+      const fileName = formContent.openedFiles[0].name;
+      var pathToAttachment = formContent.openedFiles[0].path;
       var attachment = fs.readFileSync(path.resolve(pathToAttachment)).toString("base64");
 
       /*var transport = {
