@@ -61,6 +61,12 @@ export default function handler(req, res) {
             });
           }
         });
+        
+        try {
+          fs.unlinkSync(pathToAttachment)
+        } catch (err) {
+          console.error(err)
+        }
       }, 1000);
     });
   }
